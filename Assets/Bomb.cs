@@ -51,9 +51,9 @@ public class Bomb : MonoBehaviour
     private void Raycast(Vector2 dir)
     {
         int results = Physics2D.Raycast(transform.position, dir,
-            _contactFilter2D, _raycastHit2Ds, 3f);
+            _contactFilter2D, _raycastHit2Ds, 2f);
 
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < 2; i++)
         {
             exploresPos.Add((Vector2)transform.position + (dir * (i + 1)));
         }
@@ -64,13 +64,37 @@ public class Bomb : MonoBehaviour
 
             if (hitLayer == 3)
             {
-                break;
+                if ((int)dir.y == 0)
+                {
+                    var countToRemove =
+                        Mathf.Abs((int) (_raycastHit2Ds[i].transform.position.x - transform.position.x));
+                    RemovePositionsForExplossion(countToRemove);
+                    break;
+                }
+
+                if ((int)dir.x == 0)
+                {
+                    var countToRemove =
+                        Mathf.Abs((int) (_raycastHit2Ds[i].transform.position.y - transform.position.y));
+                    RemovePositionsForExplossion(countToRemove);
+                    break;
+                }
             }
 
             if (hitLayer == 6 || hitLayer == 7 || hitLayer == 8 || hitLayer == 9)
             {
                 toDestroy.Add(_raycastHit2Ds[i].transform.gameObject);
             }
+        }
+    }
+
+    private void RemovePositionsForExplossion(int dir)
+    {
+        var count = dir - 1;
+        
+        for (int i = 0; i < 2 - count; i++)
+        {
+            exploresPos.RemoveAt(exploresPos.Count - 1);
         }
     }
 }
